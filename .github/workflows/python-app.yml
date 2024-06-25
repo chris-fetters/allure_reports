@@ -1,0 +1,60 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    ########## Detect Python Version ##########
+    - name: 'Detect Python Version'
+      id: detect-python-version
+      shell: bash
+      run: |
+        if [ -f ./.python-version ]; then
+          python_version=$(cat .python-version)
+        else
+          echo "::error::.python-version file does not exist. Please add with desired version number"
+          exit 1
+        fi
+        echo "python_version=$python_version" >> $GITHUB_OUTPUT
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+          python-version: "${{ steps.detect-python-version.outputs.python_version }}"
+
+    ########## Poetry Install ##########
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.8.2
+        virtualenvs-create: true
+        virtualenvs-in-project: false
+        installer-parallel: true
+        
+    ########## Install dependencies ##########
+    - name: Install and configure Poetry
+      run: |
+        poetry install
+        
+    - name: Test with pytest
+      run: |
+        poetry run pytest tests --alluredir results
