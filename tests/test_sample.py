@@ -2,6 +2,7 @@ import allure
 import pytest 
 import random
 
+
 @allure.feature("Fruits")
 class TestFruit:
     @allure.description("This test will validate that the first charater of the test fruit matches a random fruit")
