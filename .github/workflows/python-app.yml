@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        test: ["test_set_two"]
+        test: ["test_set_one"]
 
     steps:
     - uses: actions/checkout@v4
